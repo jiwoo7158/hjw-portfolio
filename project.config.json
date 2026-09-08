@@ -1,0 +1,27 @@
+{
+  "project": "personal-portfolio",
+  "architecture_reference": "https://github.com/205sla/205-portfolio",
+  "copy_reference_code": false,
+  "site_framework": "Astro",
+  "content_source_of_truth": "git-markdown",
+  "notion_role": "mirror-and-initial-migration-source",
+  "runtime_reads_notion": false,
+  "bidirectional_sync": false,
+  "post_migration_notion_to_git_sync": false,
+  "deployment": "GitHub Actions -> GitHub Pages",
+  "content_root": "src/content/projects",
+  "asset_policy": {
+    "project_images": "colocated-with-index.md",
+    "documents": "public/docs",
+    "large_video": "external-hosting",
+    "notion_signed_urls_in_markdown": false
+  },
+  "notion_identity": {
+    "key": "Slug",
+    "duplicate_policy": "abort"
+  },
+  "codex_modes": {
+    "draft": "edit/validate locally, no push unless asked",
+    "publish": "edit -> validate -> notion mirror -> commit -> push"
+  }
+}

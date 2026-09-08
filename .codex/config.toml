@@ -1,0 +1,6 @@
+# Notion 공식 remote MCP server.
+# 최초 1회 인증:
+#   codex mcp login notion
+
+[mcp_servers.notion]
+url = "https://mcp.notion.com/mcp"
