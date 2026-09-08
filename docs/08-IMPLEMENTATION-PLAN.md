@@ -63,7 +63,7 @@
 - [ ] 한 페이지 create
 - [ ] 같은 slug update
 - [ ] duplicate detection 규칙 확인
-- [ ] image upload test
+- [ ] image mirror 방식 결정(File Upload API 또는 영구 URL)
 
 ## Milestone 7. Initial Notion migration
 

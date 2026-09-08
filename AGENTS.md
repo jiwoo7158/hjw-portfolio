@@ -184,11 +184,14 @@ Notion page ID를 공개 Git 저장소의 필수 키로 사용하지 않는다.
 
 ### Notion
 
-Notion MCP가 파일 업로드를 지원하면 이미지 mirror에 업로드한다.
+현재 Notion MCP만으로 이미지/파일을 직접 업로드한다고 가정하지 않는다.
 
-단, 파일이 너무 크거나 업로드가 불가능하면:
-- 홈페이지/GitHub의 영구 URL을 링크하거나
-- Notion에는 대표 이미지만 넣고 원본 링크를 제공한다.
+Notion mirror의 이미지 처리는 이후 별도로 설계한다.
+우선순위는:
+- 별도의 Notion File Upload API 사용 검토
+- 홈페이지/GitHub의 영구 asset URL 링크
+- Notion에는 대표 이미지 없이 원본 링크 제공
+중 하나다.
 
 Notion 이미지 URL을 홈페이지의 영구 asset URL로 재사용하지 않는다.
 

@@ -1,0 +1,27 @@
+{
+  "name": "hjw-portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/astro-command.mjs dev",
+    "check": "npm run validate:content && node scripts/astro-command.mjs check",
+    "build": "node scripts/astro-command.mjs build",
+    "preview": "node scripts/astro-command.mjs preview",
+    "validate:content": "node scripts/validate-content.mjs"
+  },
+  "engines": {
+    "node": ">=24 <25",
+    "npm": ">=11"
+  },
+  "dependencies": {
+    "astro": "^7.3.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^5.9.2"
+  },
+  "overrides": {
+    "picomatch": "4.0.4"
+  }
+}

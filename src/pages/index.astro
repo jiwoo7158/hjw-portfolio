@@ -1,0 +1,77 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import { categoryLabels, sortProjects, uniqueCategories } from "../lib/projects";
+
+const allProjects = await getCollection("projects");
+const projects = sortProjects(allProjects.filter((project) => !project.data.draft));
+const categories = uniqueCategories(projects);
+
+const coverModules = import.meta.glob<{ default: string | { src: string } }>(
+  "/src/content/projects/**/*.{png,jpg,jpeg,webp,avif,svg}"
+);
+
+async function loadCoverUrl(project: (typeof projects)[number]) {
+  const cover = project.data.cover?.image;
+  if (!cover) return undefined;
+  const load = coverModules[`/src/content/projects/${project.data.category}/${project.data.slug}/${cover}`];
+  if (!load) return undefined;
+  const mod = await load();
+  return typeof mod.default === "string" ? mod.default : mod.default.src;
+}
+
+const coverUrls = new Map(
+  await Promise.all(projects.map(async (project) => [project.data.slug, await loadCoverUrl(project)] as const))
+);
+---
+
+<BaseLayout>
+  <section class="hero">
+    <img class="hero-art" src={`${import.meta.env.BASE_URL}assets/portfolio-field.svg`} alt="" />
+    <div class="hero-inner">
+      <p class="eyebrow">Markdown-first portfolio</p>
+      <h1>프로젝트와 연구 기록을 Git으로 관리하는 정적 포트폴리오</h1>
+      <p class="lead">
+        콘텐츠 원본은 로컬 Markdown과 이미지이며, Astro가 목록과 상세 페이지를 정적으로 생성합니다.
+      </p>
+    </div>
+  </section>
+
+  <section class="section" id="projects" aria-labelledby="projects-title">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Projects</p>
+        <h2 id="projects-title">Published Work</h2>
+      </div>
+      {
+        categories.length > 0 && (
+          <ul class="category-list" aria-label="Project categories">
+            {categories.map((category) => <li>{categoryLabels[category]}</li>)}
+          </ul>
+        )
+      }
+    </div>
+
+    {
+      projects.length > 0 ? (
+        <div class="project-grid">
+          {projects.map((project) => <ProjectCard project={project} coverUrl={coverUrls.get(project.data.slug)} />)}
+        </div>
+      ) : (
+        <p class="empty-state">게시된 프로젝트가 아직 없습니다. draft를 해제한 Markdown 파일을 추가하면 카드가 자동 생성됩니다.</p>
+      )
+    }
+  </section>
+
+  <section class="section workflow" id="workflow" aria-labelledby="workflow-title">
+    <p class="eyebrow">Workflow</p>
+    <h2 id="workflow-title">Canonical content stays in Git</h2>
+    <div class="workflow-steps" aria-label="Content workflow">
+      <span>Markdown</span>
+      <span>Astro build</span>
+      <span>GitHub Pages</span>
+      <span>Notion mirror</span>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,39 @@
+---
+import type { Project } from "../lib/projects";
+import { categoryLabels, getProjectPath } from "../lib/projects";
+
+interface Props {
+  project: Project;
+  coverUrl?: string;
+}
+
+const { project, coverUrl } = Astro.props;
+const href = `${import.meta.env.BASE_URL.replace(/\/$/, "")}${getProjectPath(project)}`;
+---
+
+<article class="project-card">
+  <a class="cover-link" href={href} aria-label={`${project.data.title} 상세 보기`}>
+    {
+      coverUrl ? (
+        <img src={coverUrl} alt="" loading="lazy" />
+      ) : (
+        <div class="cover-fallback" aria-hidden="true">{project.data.category}</div>
+      )
+    }
+  </a>
+  <div class="project-body">
+    <div class="meta-row">
+      <span>{categoryLabels[project.data.category]}</span>
+      {project.data.year && <span>{project.data.year}</span>}
+    </div>
+    <h3><a href={href}>{project.data.title}</a></h3>
+    <p>{project.data.description}</p>
+    {
+      project.data.tags.length > 0 && (
+        <ul class="tags" aria-label="Tags">
+          {project.data.tags.slice(0, 4).map((tag) => <li>{tag}</li>)}
+        </ul>
+      )
+    }
+  </div>
+</article>

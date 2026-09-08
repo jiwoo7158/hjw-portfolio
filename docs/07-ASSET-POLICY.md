@@ -82,6 +82,12 @@ Notion API/MCP가 준 temporary URL을 그대로 저장하지 않는다.
 
 ## Notion mirror 이미지
 
-20 MiB 이하라면 MCP file upload 사용을 우선할 수 있다.
+현재 Notion MCP만으로 이미지/파일을 직접 업로드한다고 가정하지 않는다.
 
-큰 파일은 홈페이지/외부 저장소 링크로 대체한다.
+Notion mirror에서 이미지를 다룰 때는 이후 별도로 다음 중 하나를 선택해 설계한다.
+
+- Notion File Upload API
+- 홈페이지/GitHub의 영구 asset URL
+- 외부 저장소 링크
+
+홈페이지/GitHub asset의 canonical 소유권은 계속 Git repository에 있다.

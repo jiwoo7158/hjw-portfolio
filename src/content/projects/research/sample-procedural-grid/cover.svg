@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" role="img" aria-label="Procedural grid sample cover">
+  <rect width="1200" height="750" fill="#edf4f1"/>
+  <path d="M0 516 C150 462 247 548 385 506 C545 458 612 340 780 376 C938 410 1020 538 1200 486 L1200 750 L0 750 Z" fill="#c56b40" opacity=".28"/>
+  <g fill="none" stroke="#123d3a" stroke-width="6" opacity=".9">
+    <path d="M230 478 L410 374 L592 478 L410 582 Z"/>
+    <path d="M410 374 L410 582"/>
+    <path d="M592 478 L592 274 L410 170 L230 274 L230 478"/>
+    <path d="M230 274 L410 378 L592 274"/>
+    <path d="M410 170 L410 378"/>
+  </g>
+  <g fill="#0f766e" opacity=".82">
+    <circle cx="760" cy="230" r="26"/>
+    <circle cx="842" cy="298" r="18"/>
+    <circle cx="916" cy="226" r="14"/>
+    <circle cx="990" cy="318" r="22"/>
+  </g>
+</svg>

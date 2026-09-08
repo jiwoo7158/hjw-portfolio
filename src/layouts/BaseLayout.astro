@@ -1,0 +1,38 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const siteTitle = "HJW Portfolio";
+const { title = siteTitle, description = "Markdown-first personal portfolio and knowledge site." } = Astro.props;
+const pageTitle = title === siteTitle ? title : `${title} | ${siteTitle}`;
+const homeHref = import.meta.env.BASE_URL;
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#content">본문으로 이동</a>
+    <header class="site-header">
+      <nav class="nav" aria-label="Main navigation">
+        <a class="brand" href={homeHref}>HJW Portfolio</a>
+        <div class="nav-links">
+          <a href={`${homeHref}#projects`}>Projects</a>
+          <a href={`${homeHref}#workflow`}>Workflow</a>
+        </div>
+      </nav>
+    </header>
+    <main id="content">
+      <slot />
+    </main>
+  </body>
+</html>

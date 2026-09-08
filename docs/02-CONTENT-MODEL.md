@@ -107,7 +107,7 @@ Markdown → Notion mirror 시 의미를 유지한다.
 - checkbox → todo
 - blockquote → quote/callout에 가까운 표현
 - Markdown table → Notion에서 가능한 표
-- image → 파일 업로드 또는 영구 URL
+- image → 영구 URL 또는 별도 File Upload API 설계 후 업로드
 - code fence → code block
 - link → rich text link
 

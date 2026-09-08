@@ -1,0 +1,52 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { categoryLabels, getProjectPath, sortProjects } from "../../lib/projects";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+  return sortProjects(projects.filter((project) => !project.data.draft)).map((project) => ({
+    params: { slug: `${project.data.category}/${project.data.slug}` },
+    props: { project }
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const homeHref = import.meta.env.BASE_URL;
+const canonicalPath = `${homeHref.replace(/\/$/, "")}${getProjectPath(project)}`;
+---
+
+<BaseLayout title={project.data.title} description={project.data.description}>
+  <article class="project-detail">
+    <header class="detail-header">
+      <a class="back-link" href={homeHref}>&larr; Projects</a>
+      <div class="detail-meta">
+        <span>{categoryLabels[project.data.category]}</span>
+        {project.data.year && <span>{project.data.year}</span>}
+        {project.data.team && <span>{project.data.team}</span>}
+      </div>
+      <h1>{project.data.title}</h1>
+      <p>{project.data.description}</p>
+      {
+        project.data.tags.length > 0 && (
+          <ul class="tags detail-tags" aria-label="Tags">
+            {project.data.tags.map((tag) => <li>{tag}</li>)}
+          </ul>
+        )
+      }
+      <div class="detail-links" aria-label="Project links">
+        {project.data.links.github && <a href={project.data.links.github}>GitHub</a>}
+        {project.data.links.demo && <a href={project.data.links.demo}>Demo</a>}
+        {project.data.links.youtube && <a href={project.data.links.youtube}>YouTube</a>}
+        {project.data.links.paper && <a href={project.data.links.paper}>Paper</a>}
+      </div>
+    </header>
+    <div class="prose">
+      <Content />
+    </div>
+    <footer class="detail-footer">
+      <p>Canonical path: <code>{canonicalPath}</code></p>
+    </footer>
+  </article>
+</BaseLayout>

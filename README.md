@@ -1,108 +1,141 @@
-# Portfolio + Notion MCP + Codex Blueprint
+# HJW Portfolio
 
-이 폴더는 개인 홈페이지를 다음 구조로 구축하기 위한 **설계 및 Codex 인수인계 패키지**다.
+Astro 기반 개인 포트폴리오/지식 홈페이지입니다. 콘텐츠의 원본은 Git 저장소의 Markdown과 같은 폴더에 둔 이미지이며, Notion은 런타임 CMS가 아니라 mirror로만 사용합니다.
 
-- 참고 운영 방식: `205sla/205-portfolio`
-- 홈페이지 엔진: Astro 정적 사이트
-- 콘텐츠 저장소(Source of Truth): 로컬/GitHub의 Markdown + 이미지
-- 보조 지식베이스/열람본: Notion
-- 편집 주체: Codex
-- Notion 연결: 공식 Notion MCP
-- 배포: GitHub Actions → GitHub Pages
+## Stack
 
-> 중요: `205sla/205-portfolio`의 아키텍처와 운영 방식은 참고하되, 해당 저장소의 코드/디자인/에셋을 그대로 복사하지 않는다. 이 설계는 같은 운영 철학을 새 코드로 구현하는 것을 목표로 한다.
+- Astro `7.3.x`
+- TypeScript
+- Astro Content Collections
+- GitHub Actions -> GitHub Pages
+- Notion MCP for interactive mirror work only
 
-## 가장 중요한 결정
+## Local Setup
 
-**초기 1회**
+```bash
+npm install
+npm run dev
+```
+
+첫 설치 후 생성되는 `package-lock.json`은 GitHub Actions의 `npm ci` 배포를 위해 함께 커밋해야 합니다.
+
+검증과 정적 빌드:
+
+```bash
+npm run check
+npm run build
+npm run preview
+```
+
+현재 프로젝트는 Notion 연결 없이도 `check`와 `build`가 성공해야 합니다.
+
+## Content
+
+프로젝트 하나는 다음 구조를 따릅니다.
+
 ```text
-기존 Notion
-  ↓
-Codex + Notion MCP
-  ↓
-Markdown / 이미지 로컬화
-  ↓
-GitHub
-  ↓
-Astro
-  ↓
-GitHub Pages
+src/content/projects/<category>/<slug>/
+├─ index.md
+├─ cover.png
+└─ screenshot-01.png
 ```
 
-**초기 마이그레이션 완료 후**
-```text
-사용자
-  ↓
-Codex
-  ↓
-로컬 Markdown + 이미지  ← 진짜 원본
-  ├────────────→ Notion mirror
-  │
-  └→ Git commit → Git push
-                    ↓
-              GitHub Actions
-                    ↓
-              GitHub Pages
+초기 카테고리:
+
+- `game`
+- `web`
+- `research`
+- `security`
+- `etc`
+
+`index.md` frontmatter 예시:
+
+```yaml
+---
+title: "프로젝트 제목"
+slug: "project-slug"
+category: "research"
+description: "목록 카드에 표시되는 설명"
+year: 2026
+dateRange: "2026.09"
+team: "개인"
+tags:
+  - Example
+cover:
+  image: "cover.png"
+featured: false
+draft: true
+links:
+  github: ""
+  demo: ""
+  youtube: ""
+  paper: ""
+order: 100
+---
 ```
 
-Notion에서 사람이 직접 콘텐츠를 수정한 뒤 GitHub로 다시 가져오는 양방향 동기화는 하지 않는다.
+`draft: true`인 콘텐츠는 홈 목록과 상세 페이지 생성에서 제외됩니다.
 
-## 이 패키지를 받은 뒤 Codex에 처음 시킬 말
+## Images And Documents
 
-`CODEX_BOOTSTRAP_PROMPT.md`의 내용을 통째로 Codex에 전달한다.
+- 프로젝트 이미지는 해당 프로젝트 폴더에 둡니다.
+- Markdown에서는 상대경로를 사용합니다. 예: `![설명](screenshot-01.png)`
+- PDF와 첨부 문서는 `public/docs`에 둡니다.
+- Notion temporary/signed URL은 Markdown에 저장하지 않습니다.
+- 큰 영상 파일은 Git에 넣지 않고 YouTube 등 외부 URL을 사용합니다.
 
-그 전에 Notion MCP를 연결한다.
+## Notion Mirror
 
-```toml
-# .codex/config.toml
-[mcp_servers.notion]
-url = "https://mcp.notion.com/mcp"
-```
+Notion은 mirror입니다. 사이트 런타임과 GitHub Actions는 Notion API나 MCP를 호출하지 않습니다.
 
-인증:
+로컬 Codex 세션에서 Notion MCP를 쓸 때의 기준 속성:
+
+- `Name`: title
+- `Slug`: Git Markdown의 `slug`
+- `Category`: category
+- `Year`: year
+- `Tags`: tags
+- `Status`: Draft / Published / Archived
+- `Description`: description
+- `GitHub URL`: optional
+- `Site URL`: optional
+- `Updated At`: sync 시각
+
+Upsert 규칙:
+
+1. Markdown을 먼저 수정합니다.
+2. `Slug`로 Notion Portfolio DB 페이지를 찾습니다.
+3. 0개면 생성, 1개면 갱신, 2개 이상이면 중단합니다.
+
+최초 인증:
 
 ```bash
 codex mcp login notion
 ```
 
-## 파일 안내
+## GitHub Pages
 
-- `AGENTS.md`
-  - Codex가 항상 지켜야 하는 프로젝트 규칙
-- `CODEX_BOOTSTRAP_PROMPT.md`
-  - 처음 프로젝트를 구현할 때 Codex에 전달할 실행 프롬프트
-- `docs/00-DECISIONS.md`
-  - 변경하면 안 되는 핵심 설계 결정
-- `docs/01-ARCHITECTURE.md`
-  - 전체 기술 아키텍처
-- `docs/02-CONTENT-MODEL.md`
-  - Markdown/frontmatter/Notion DB 모델
-- `docs/03-NOTION-MCP.md`
-  - Notion MCP 사용 규칙
-- `docs/04-INITIAL-MIGRATION.md`
-  - 기존 Notion 자료 최초 이전 절차
-- `docs/05-DAILY-WORKFLOW.md`
-  - 이후 일상적인 콘텐츠 추가/수정 절차
-- `docs/06-DEPLOYMENT.md`
-  - GitHub Pages 배포 구조
-- `docs/07-ASSET-POLICY.md`
-  - 이미지/PDF/영상 처리 규칙
-- `docs/08-IMPLEMENTATION-PLAN.md`
-  - Codex 구현 순서
-- `docs/09-ACCEPTANCE-CHECKLIST.md`
-  - 완료 판정 기준
-- `docs/10-CODEX-PROMPTS.md`
-  - 실제 운영 시 사용할 프롬프트 예시
-- `templates/project-index.md`
-  - 프로젝트 콘텐츠 템플릿
-- `templates/deploy.yml`
-  - GitHub Pages workflow 참고 템플릿
-- `project.config.json`
-  - Codex가 빠르게 읽을 수 있는 기계 판독용 설계 요약
+`.github/workflows/deploy.yml`은 `main` push와 수동 실행을 지원합니다.
 
-## 공식 문서
+GitHub에서 해야 할 설정:
 
-- Notion MCP overview: https://developers.notion.com/guides/mcp/overview
-- Notion MCP 연결: https://developers.notion.com/guides/mcp/get-started-with-mcp
-- Notion MCP supported tools: https://developers.notion.com/guides/mcp/mcp-supported-tools
-- 참고 저장소: https://github.com/205sla/205-portfolio
+1. Repository Settings -> Pages
+2. Source를 `GitHub Actions`로 설정
+3. 필요하면 repository variable 또는 workflow 환경으로 `SITE_URL`, `BASE_PATH`를 설정
+
+Project Pages를 쓸 경우 `BASE_PATH`를 저장소 이름 기반 경로로 설정할 수 있습니다. 예:
+
+```text
+BASE_PATH=/hjw-portfolio/
+```
+
+커스텀 도메인을 쓸 때만 `SITE_URL`과 `public/CNAME`을 추가합니다.
+
+## Development Samples
+
+현재 샘플 콘텐츠 2개가 있습니다.
+
+- `sample-procedural-grid`: 게시 샘플
+- `sample-portfolio-system`: draft 제외 검증 샘플
+
+실제 콘텐츠 마이그레이션 뒤에는 삭제하거나 draft 상태로 바꿔도 됩니다.

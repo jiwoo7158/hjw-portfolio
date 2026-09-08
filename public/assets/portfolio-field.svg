@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Abstract portfolio workspace">
+  <rect width="1600" height="900" fill="#f7f4ee"/>
+  <path d="M0 630 C210 550 315 720 512 650 C710 580 822 420 1040 476 C1258 532 1372 714 1600 620 L1600 900 L0 900 Z" fill="#c56b40" opacity=".26"/>
+  <path d="M0 228 C170 156 306 175 450 244 C596 315 764 350 930 260 C1094 171 1302 144 1600 278 L1600 0 L0 0 Z" fill="#0f766e" opacity=".18"/>
+  <g opacity=".82" fill="none" stroke="#172026" stroke-width="3">
+    <path d="M246 598 L470 468 L696 598 L470 728 Z"/>
+    <path d="M470 468 L470 728"/>
+    <path d="M696 598 L696 342 L470 212 L246 342 L246 598"/>
+    <path d="M246 342 L470 472 L696 342"/>
+    <path d="M470 212 L470 472"/>
+  </g>
+  <g opacity=".52" fill="#ffffff" stroke="#172026" stroke-width="2">
+    <rect x="1038" y="230" width="286" height="178" rx="10"/>
+    <rect x="1086" y="284" width="190" height="14" rx="7" fill="#0f766e" stroke="none"/>
+    <rect x="1086" y="324" width="132" height="14" rx="7" fill="#c56b40" stroke="none"/>
+  </g>
+</svg>

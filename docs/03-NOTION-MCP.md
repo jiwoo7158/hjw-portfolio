@@ -33,14 +33,17 @@ codex mcp login notion
 
 따라서 GitHub Actions에서 홈페이지 빌드를 위해 MCP에 로그인하는 구조를 만들지 않는다.
 
-### 2. 파일 크기
+### 2. 이미지/파일 업로드
 
-공식 문서 기준 MCP 파일 업로드 도구는 일반적으로 최대 20 MiB 파일 업로드 경로를 제공한다.
-더 큰 파일은:
-- Notion의 별도 file upload API
+현재 공식 Notion MCP만으로 이미지/파일을 직접 업로드한다고 가정하지 않는다.
+
+Notion mirror에 이미지를 표시해야 할 때는 다음 중 하나를 별도 설계 후 사용한다.
+
+- Notion의 별도 File Upload API
+- 홈페이지/GitHub의 영구 asset URL
 - 외부 저장소 링크
-- 홈페이지의 파일 URL
-중 하나를 사용한다.
+
+이번 사이트 빌드와 GitHub Actions 배포는 Notion 파일 업로드 기능에 의존하지 않는다.
 
 ### 3. 권한
 
@@ -56,6 +59,8 @@ Codex가 다음을 수행한다.
 4. `Slug` 속성 생성/확인
 5. 샘플 page 한 개로 create/update 테스트
 6. 실제 콘텐츠 대량 sync 전 결과 확인
+
+이미지 mirror가 필요하면 MCP 직접 업로드를 전제로 하지 말고, 영구 URL 또는 별도 File Upload API 방식을 먼저 결정한다.
 
 ## Upsert 알고리즘
 

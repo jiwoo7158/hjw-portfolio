@@ -27,7 +27,7 @@
 - [ ] page update
 - [ ] Slug로 upsert
 - [ ] duplicate slug에서 중단
-- [ ] 파일 upload 또는 fallback 검증
+- [ ] 이미지 mirror 방식 결정(File Upload API 또는 영구 URL)
 
 ## 초기 migration
 
