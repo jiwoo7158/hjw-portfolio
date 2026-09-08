@@ -1,38 +1,28 @@
-# 02. 콘텐츠 모델
+# 02. Content Model
 
-## 권장 frontmatter
+## Project Location
+
+Each project is stored as one Markdown entry under:
+
+```text
+src/content/projects/<category>/<slug>/index.md
+```
+
+Images for an internal project should live in the same folder as `index.md`. Public shared assets can live in `public/assets`.
+
+## Required Frontmatter
 
 ```yaml
 ---
-title: "Townscaper Grid의 3차원 확장"
-slug: "townscaper-3d-grid"
-category: "research"
-description: "Townscaper의 irregular grid 아이디어를 3차원 공간으로 확장한 실험 기록"
-year: 2026
-dateRange: "2026.09"
-team: "개인"
-tags:
-  - Procedural Generation
-  - Grid
-  - Computational Geometry
-cover:
-  image: "cover.png"
-featured: false
+title: "Project title"
+slug: "project-slug"
+category: "web"
+description: "Short card summary"
 draft: false
-links:
-  github: ""
-  demo: ""
-  youtube: ""
-  paper: ""
-order: 100
 ---
-
-## 개요
-
-본문...
 ```
 
-## 필수 필드
+Required fields:
 
 - `title`
 - `slug`
@@ -40,24 +30,28 @@ order: 100
 - `description`
 - `draft`
 
-## 선택 필드
+## Optional Frontmatter
 
-- `year`
-- `dateRange`
-- `team`
-- `tags`
-- `cover.image`
-- `featured`
-- `links`
-- `order`
+```yaml
+year: 2026
+dateRange: "2026.09"
+team: "Personal"
+tags:
+  - Web
+cover:
+  image: "cover.png"
+external: false
+featured: false
+links:
+  github: ""
+  demo: ""
+  site: ""
+  youtube: ""
+  paper: ""
+order: 100
+```
 
-필드는 실제 홈페이지 요구가 생길 때 확장한다.
-
-처음부터 너무 많은 필드를 만들지 않는다.
-
-## 카테고리
-
-초기 후보:
+Supported categories:
 
 - `game`
 - `web`
@@ -65,50 +59,60 @@ order: 100
 - `security`
 - `etc`
 
-기존 Notion inventory를 보고 실제 분류가 명확하면 변경 가능하다.
+## Internal Projects
 
-## URL
-
-권장:
+Internal projects are the default. They generate a local detail route:
 
 ```text
 /projects/<category>/<slug>/
 ```
 
-slug가 안정적으로 유지되는 한 URL도 안정적이다.
+Example:
 
-## Notion DB 대응
+```yaml
+external: false
+links:
+  github: "https://github.com/example/project"
+  demo: ""
+  site: ""
+```
 
-권장 데이터베이스 이름:
-`Portfolio`
+## External Projects
 
-속성:
+External projects are already hosted somewhere else, such as a separate GitHub Pages site.
 
-| Notion 속성 | Git 값 | 비고 |
-|---|---|---|
-| Name | title | title property |
-| Slug | slug | 고유 식별자 |
-| Category | category | select |
-| Description | description | text |
-| Year | year | number/text |
-| Tags | tags | multi-select |
-| Status | draft | Draft/Published |
-| GitHub URL | 계산/입력 | optional |
-| Site URL | 계산/입력 | optional |
-| Updated At | sync 시각 | optional |
+They still live in the same `projects` Content Collection so cards, categories, tags, and ordering are managed consistently. The card opens `links.site` directly and no internal `/projects/<category>/<slug>/` route is generated.
 
-## 본문 변환
+Example:
 
-Markdown → Notion mirror 시 의미를 유지한다.
+```yaml
+external: true
+links:
+  site: "https://example.github.io/project/"
+```
 
-- `##` → heading
-- paragraph → paragraph
-- list → bulleted/numbered list
-- checkbox → todo
-- blockquote → quote/callout에 가까운 표현
-- Markdown table → Notion에서 가능한 표
-- image → 영구 URL 또는 별도 File Upload API 설계 후 업로드
-- code fence → code block
-- link → rich text link
+Validation rules for external projects:
 
-Notion 레이아웃과 홈페이지 레이아웃을 1:1 픽셀 동기화하려 하지 않는다.
+- `links.site` is required.
+- `links.site` must be a valid `http` or `https` URL.
+- `slug` still follows the same stable lowercase rule.
+- `draft: true` still excludes the card from production output.
+
+## Notion Mapping
+
+Recommended Notion Portfolio properties:
+
+| Notion property | Git value | Notes |
+| --- | --- | --- |
+| Name | `title` | title property |
+| Slug | `slug` | stable identity key |
+| Category | `category` | select |
+| Description | `description` | text |
+| Year | `year` | number/text |
+| Tags | `tags` | multi-select |
+| Status | `draft` | Draft/Published |
+| GitHub URL | `links.github` | optional |
+| Site URL | `links.site` or generated site URL | required for external projects |
+| Updated At | sync timestamp | optional |
+
+Markdown/Git remains canonical after migration. Notion is a mirror and must not be required for `npm run build`.

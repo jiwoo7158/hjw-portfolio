@@ -15,6 +15,10 @@ export function getProjectPath(project: Project) {
   return `/projects/${project.data.category}/${project.data.slug}/`;
 }
 
+export function getProjectHref(project: Project) {
+  return project.data.external ? project.data.links.site : getProjectPath(project);
+}
+
 export function sortProjects(projects: Project[]) {
   return [...projects].sort((a, b) => {
     const featuredDelta = Number(b.data.featured) - Number(a.data.featured);

@@ -1,6 +1,6 @@
 ---
 import type { Project } from "../lib/projects";
-import { categoryLabels, getProjectPath } from "../lib/projects";
+import { categoryLabels, getProjectHref } from "../lib/projects";
 
 interface Props {
   project: Project;
@@ -8,11 +8,21 @@ interface Props {
 }
 
 const { project, coverUrl } = Astro.props;
-const href = `${import.meta.env.BASE_URL.replace(/\/$/, "")}${getProjectPath(project)}`;
+const projectHref = getProjectHref(project);
+const href = project.data.external
+  ? projectHref
+  : `${import.meta.env.BASE_URL.replace(/\/$/, "")}${projectHref}`;
+const linkLabel = project.data.external ? `${project.data.title} 외부 사이트 열기` : `${project.data.title} 상세 보기`;
 ---
 
 <article class="project-card">
-  <a class="cover-link" href={href} aria-label={`${project.data.title} 상세 보기`}>
+  <a
+    class="cover-link"
+    href={href}
+    aria-label={linkLabel}
+    target={project.data.external ? "_blank" : undefined}
+    rel={project.data.external ? "noopener noreferrer" : undefined}
+  >
     {
       coverUrl ? (
         <img src={coverUrl} alt="" loading="lazy" />
@@ -25,8 +35,17 @@ const href = `${import.meta.env.BASE_URL.replace(/\/$/, "")}${getProjectPath(pro
     <div class="meta-row">
       <span>{categoryLabels[project.data.category]}</span>
       {project.data.year && <span>{project.data.year}</span>}
+      {project.data.external && <span>External</span>}
     </div>
-    <h3><a href={href}>{project.data.title}</a></h3>
+    <h3>
+      <a
+        href={href}
+        target={project.data.external ? "_blank" : undefined}
+        rel={project.data.external ? "noopener noreferrer" : undefined}
+      >
+        {project.data.title}
+      </a>
+    </h3>
     <p>{project.data.description}</p>
     {
       project.data.tags.length > 0 && (

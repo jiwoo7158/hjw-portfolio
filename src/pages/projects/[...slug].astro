@@ -5,7 +5,7 @@ import { categoryLabels, getProjectPath, sortProjects } from "../../lib/projects
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
-  return sortProjects(projects.filter((project) => !project.data.draft)).map((project) => ({
+  return sortProjects(projects.filter((project) => !project.data.draft && !project.data.external)).map((project) => ({
     params: { slug: `${project.data.category}/${project.data.slug}` },
     props: { project }
   }));

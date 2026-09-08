@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ProjectCard from "../components/ProjectCard.astro";
+import { homepage } from "../data/home";
 import { categoryLabels, sortProjects, uniqueCategories } from "../lib/projects";
 
 const allProjects = await getCollection("projects");
@@ -26,15 +27,65 @@ const coverUrls = new Map(
 );
 ---
 
-<BaseLayout>
+<BaseLayout title={homepage.hero.title} description={homepage.hero.lead}>
   <section class="hero">
     <img class="hero-art" src={`${import.meta.env.BASE_URL}assets/portfolio-field.svg`} alt="" />
     <div class="hero-inner">
-      <p class="eyebrow">Markdown-first portfolio</p>
-      <h1>프로젝트와 연구 기록을 Git으로 관리하는 정적 포트폴리오</h1>
-      <p class="lead">
-        콘텐츠 원본은 로컬 Markdown과 이미지이며, Astro가 목록과 상세 페이지를 정적으로 생성합니다.
-      </p>
+      <p class="eyebrow">{homepage.hero.eyebrow}</p>
+      <h1>{homepage.hero.title}</h1>
+      <p class="lead">{homepage.hero.lead}</p>
+      <div class="hero-actions" aria-label="Primary links">
+        {homepage.links.map((link) => <a href={link.href}>{link.label}</a>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section intro-grid" id="about" aria-labelledby="about-title">
+    <div class="intro-copy">
+      <p class="eyebrow">About</p>
+      <h2 id="about-title">기획과 구현을 함께 다루는 게임 개발자</h2>
+      {homepage.about.map((paragraph) => <p>{paragraph}</p>)}
+    </div>
+    <div class="focus-list" aria-label="Current focus areas">
+      {homepage.focusAreas.map((area) => (
+        <article class="focus-item">
+          <h3>{area.title}</h3>
+          <p>{area.description}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section skills-section" id="skills" aria-labelledby="skills-title">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Skills</p>
+        <h2 id="skills-title">기술 스택</h2>
+      </div>
+    </div>
+    <div class="skills-grid">
+      <article class="skill-panel">
+        <h3>Language</h3>
+        {homepage.skills.languages.map((group) => (
+          <div class="skill-group">
+            <strong>{group.level}</strong>
+            <ul class="tags" aria-label={`${group.level} languages`}>
+              {group.items.map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+        ))}
+      </article>
+      <article class="skill-panel">
+        <h3>Tools</h3>
+        {homepage.skills.tools.map((group) => (
+          <div class="skill-group">
+            <strong>{group.level}</strong>
+            <ul class="tags" aria-label={`${group.level} tools`}>
+              {group.items.map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+        ))}
+      </article>
     </div>
   </section>
 
@@ -59,7 +110,7 @@ const coverUrls = new Map(
           {projects.map((project) => <ProjectCard project={project} coverUrl={coverUrls.get(project.data.slug)} />)}
         </div>
       ) : (
-        <p class="empty-state">게시된 프로젝트가 아직 없습니다. draft를 해제한 Markdown 파일을 추가하면 카드가 자동 생성됩니다.</p>
+        <p class="empty-state">게시된 프로젝트가 아직 없습니다. Markdown 콘텐츠가 추가되면 카드가 자동으로 생성됩니다.</p>
       )
     }
   </section>

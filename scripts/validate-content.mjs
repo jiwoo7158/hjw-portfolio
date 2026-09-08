@@ -133,6 +133,21 @@ if (!existsSync(contentRoot)) {
       errors.push(`${relativeFile}: cover image not found: ${coverImage}`);
     }
 
+    if (data.external === true) {
+      if (!data.links || typeof data.links.site !== "string" || data.links.site.trim() === "") {
+        errors.push(`${relativeFile}: external projects must define links.site`);
+      } else {
+        try {
+          const siteUrl = new URL(data.links.site);
+          if (!["http:", "https:"].includes(siteUrl.protocol)) {
+            errors.push(`${relativeFile}: links.site must use http or https`);
+          }
+        } catch {
+          errors.push(`${relativeFile}: links.site must be a valid URL`);
+        }
+      }
+    }
+
     for (const pattern of signedUrlPatterns) {
       if (pattern.test(raw)) errors.push(`${relativeFile}: contains a Notion temporary/signed asset URL`);
     }

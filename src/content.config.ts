@@ -19,12 +19,14 @@ const projects = defineCollection({
         image: z.string().min(1)
       })
       .optional(),
+    external: z.boolean().default(false),
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
     links: z
       .object({
         github: z.url().or(z.literal("")).optional(),
         demo: z.url().or(z.literal("")).optional(),
+        site: z.url().or(z.literal("")).optional(),
         youtube: z.url().or(z.literal("")).optional(),
         paper: z.url().or(z.literal("")).optional()
       })
