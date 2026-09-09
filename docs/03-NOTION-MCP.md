@@ -1,104 +1,101 @@
-# 03. Notion MCP 운영 규칙
+# 03. Notion MCP Operating Rules
 
-## 연결
+## Connection
 
-프로젝트 `.codex/config.toml`:
+Project configuration:
 
 ```toml
 [mcp_servers.notion]
 url = "https://mcp.notion.com/mcp"
 ```
 
-최초 인증:
+Initial OAuth:
 
 ```bash
 codex mcp login notion
 ```
 
-브라우저 OAuth를 완료한다.
+The website must not depend on Notion at build time. `npm run build` and GitHub Actions deployments must work without Notion access.
 
-## 공식 MCP를 사용하는 이유
+## Current Workspace
 
-- Notion이 호스팅
-- OAuth
-- Codex 지원
-- 검색/읽기/생성/수정 지원
-- 별도 Notion token을 소스에 저장할 필요가 없음
-
-## 중요한 제약
-
-### 1. 무인 CI용으로 보지 않는다
-
-공식 Notion MCP는 현재 interactive authorization이 필요하다.
-
-따라서 GitHub Actions에서 홈페이지 빌드를 위해 MCP에 로그인하는 구조를 만들지 않는다.
-
-### 2. 이미지/파일 업로드
-
-현재 공식 Notion MCP만으로 이미지/파일을 직접 업로드한다고 가정하지 않는다.
-
-Notion mirror에 이미지를 표시해야 할 때는 다음 중 하나를 별도 설계 후 사용한다.
-
-- Notion의 별도 File Upload API
-- 홈페이지/GitHub의 영구 asset URL
-- 외부 저장소 링크
-
-이번 사이트 빌드와 GitHub Actions 배포는 Notion 파일 업로드 기능에 의존하지 않는다.
-
-### 3. 권한
-
-Codex는 OAuth로 연결한 사용자가 접근 가능한 Notion 콘텐츠 범위에서 작업한다.
-
-## Notion Portfolio DB 최초 설정
-
-Codex가 다음을 수행한다.
-
-1. `Portfolio` 데이터베이스 검색
-2. 없으면 사용자에게 생성 위치를 확인하거나, 사용자가 이미 지정한 부모 페이지 아래 생성
-3. 필요한 속성 확인
-4. `Slug` 속성 생성/확인
-5. 샘플 page 한 개로 create/update 테스트
-6. 실제 콘텐츠 대량 sync 전 결과 확인
-
-이미지 mirror가 필요하면 MCP 직접 업로드를 전제로 하지 말고, 영구 URL 또는 별도 File Upload API 방식을 먼저 결정한다.
-
-## Upsert 알고리즘
-
-페이지 하나를 mirror할 때:
+Last checked workspace:
 
 ```text
-read index.md
-↓
-parse frontmatter
-↓
-slug 획득
-↓
-Notion Portfolio DB에서 Slug 검색
-├─ 0 → create
-├─ 1 → update
-└─ 2+ → abort
+Workspace: 한지우의 Notion
+Workspace ID: 0300bf1c-c2ae-4734-829c-273f751bb54d
+User: 한지우
 ```
 
-업데이트 시 Notion에만 존재하는 사용자의 개인 메모 영역을 보존하고 싶다면 별도 섹션을 둔다.
+Tool exposure can include write-capable commands. Tool exposure is not permission to write.
 
-권장:
+## Write Boundary
+
+Existing Notion content is read-only by default.
+
+Read-only roots include:
+
+- `한지우 | HJW`
+- `Game Design Hub`
+- `세피리아 모드`
+- any other existing Notion page or database
+
+Current homepage root page ID:
 
 ```text
-[SYNCED CONTENT - Codex managed]
-...
-[PERSONAL NOTES - Notion only]
-...
+3718671c-22b3-8049-a906-c2a459188eaf
 ```
 
-Codex-managed 영역만 교체하는 방식이 가장 안전하다.
+No Notion write target is currently allowlisted.
 
-## Notion에서의 수동 수정
+Until a separate `Portfolio Mirror` root page or database is created and its ID is explicitly recorded, Codex must not create, update, delete, archive, move, comment on, or upload files to Notion.
 
-초기 마이그레이션 후 Notion mirror에서 수동으로 내용을 수정할 수는 있지만,
-그 수정은 GitHub 원본에 자동 반영되지 않는다.
+When a future write target is allowlisted, Codex may write only inside that allowlisted subtree. If the parent chain cannot be verified as being under the allowlisted root, stop and ask the user before making any Notion change.
 
-중요한 변경이라면 사용자는 Codex에게:
-"Notion에서 내가 바꾼 내용을 확인해서 canonical Markdown에도 반영해줘"
-라고 명시적으로 요청해야 한다.
+## Allowed Read Operations
 
-이 작업은 예외적인 수동 reconciliation이며 자동 양방향 sync가 아니다.
+For the current migration/research phase, Notion MCP may be used only for:
+
+- searching existing pages
+- fetching existing pages/databases
+- confirming source URLs, page properties, and page structure
+- checking workspace/tool access
+
+## Forbidden Operations
+
+Do not run these operations against existing Notion content:
+
+```text
+create
+update
+delete
+archive
+move
+comment
+upload
+```
+
+This restriction remains in place even when OAuth is complete and write-capable tools are visible.
+
+## Asset Policy
+
+Do not save Notion temporary or signed URLs into Git, Markdown, source files, docs, or generated content.
+
+Current Notion MCP must not be assumed to provide the complete homepage asset workflow. Notion mirror images require a later design using one of:
+
+- Notion File Upload API
+- permanent GitHub Pages asset URLs
+- source links without embedded image mirroring
+
+Website and GitHub assets remain canonical and are owned by the repository.
+
+## Future Portfolio Mirror
+
+If a `Portfolio Mirror` root is created later, record its page/database ID explicitly before writing.
+
+Use `Slug` as the stable identity key:
+
+1. Query by `Slug`.
+2. Create only if zero matches exist inside the allowlisted mirror target.
+3. Update only if exactly one match exists inside the allowlisted mirror target.
+4. Abort if multiple pages match the same `Slug`.

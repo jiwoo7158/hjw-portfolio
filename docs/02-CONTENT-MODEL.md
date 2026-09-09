@@ -36,6 +36,9 @@ Required fields:
 year: 2026
 dateRange: "2026.09"
 team: "Personal"
+status: "ongoing"
+context: "personal"
+role: "Solo developer"
 tags:
   - Web
 cover:
@@ -50,6 +53,12 @@ links:
   paper: ""
 order: 100
 ```
+
+Additional optional metadata:
+
+- `status`: `ongoing`, `completed`, or `discontinued`
+- `context`: `personal`, `team`, or `coursework`
+- `role`: a short text field for the user's role or contribution boundary
 
 Supported categories:
 
@@ -110,7 +119,9 @@ Recommended Notion Portfolio properties:
 | Description | `description` | text |
 | Year | `year` | number/text |
 | Tags | `tags` | multi-select |
-| Status | `draft` | Draft/Published |
+| Status | `draft` and `status` | Draft/Published plus project lifecycle |
+| Context | `context` | personal/team/coursework |
+| Role | `role` | user's contribution boundary |
 | GitHub URL | `links.github` | optional |
 | Site URL | `links.site` or generated site URL | required for external projects |
 | Updated At | sync timestamp | optional |

@@ -1,24 +1,22 @@
 # AGENTS.md
 
-이 파일은 이 저장소에서 작업하는 Codex의 최상위 프로젝트 지침이다.
+This file is the top-level operating guide for Codex in this repository.
 
-## 1. 프로젝트 목표
+## 1. Project Goal
 
-개인 포트폴리오/지식 홈페이지를 구축한다.
+Build a personal portfolio and knowledge website.
 
-운영 경험은 `205sla/205-portfolio`의 방식을 참고한다.
+Use `205sla/205-portfolio` only as an operational reference:
 
-핵심은 다음과 같다.
+1. Use Astro as a static site generator.
+2. Manage each content item as one Markdown file with colocated images.
+3. Build and deploy to GitHub Pages from GitHub Actions on the configured publishing branch.
+4. Do not use Notion as a runtime data source for the website.
+5. Treat Notion as a mirror and knowledge-management copy of Markdown content.
+6. Treat local Markdown and GitHub as the canonical source of truth.
+7. The user should be able to ask Codex for content work in natural language instead of editing files manually.
 
-1. Astro 정적 사이트를 사용한다.
-2. 각 콘텐츠는 Markdown 파일 하나와 같은 폴더의 이미지들로 관리한다.
-3. GitHub `main` 브랜치 push 시 GitHub Actions가 사이트를 빌드하고 GitHub Pages에 배포한다.
-4. Notion은 홈페이지 런타임 데이터 소스가 아니다.
-5. Notion은 Markdown 콘텐츠의 mirror/지식관리용 사본이다.
-6. 콘텐츠의 최종 원본(Source of Truth)은 Git 저장소다.
-7. 사용자는 가능하면 직접 파일을 편집하지 않고 Codex에게 자연어로 작업을 요청한다.
-
-## 2. 절대로 바꾸지 말아야 할 기본 원칙
+## 2. Core Principles
 
 ### Source of Truth
 
@@ -28,100 +26,96 @@ Notion = mirror
 Static Website = generated output
 ```
 
-초기 마이그레이션이 끝난 뒤에는 Notion → GitHub 자동 역동기화를 구현하지 않는다.
+After the initial migration, do not implement automatic Notion to GitHub reverse sync.
 
-Notion과 GitHub의 양방향 동기화도 구현하지 않는다.
+Do not implement bidirectional Notion/GitHub sync unless the user explicitly changes the architecture.
 
-사용자가 명시적으로 설계를 변경해 달라고 하지 않는 한 이 원칙을 유지한다.
+### Build Independence
 
-### 홈페이지 빌드는 Notion에 의존하지 않는다
+`npm run build` and GitHub Actions deployment must always work without Notion API or Notion MCP access.
 
-`npm run build` 및 GitHub Actions 배포는 Notion API/MCP 연결 없이도 항상 성공해야 한다.
+Do not call Notion during website builds. Notion outage, expired OAuth, or MCP failure must not block deployment.
 
-빌드 중 Notion에 요청하지 않는다.
+### Notion MCP Role
 
-Notion 장애, OAuth 만료, MCP 장애가 홈페이지 배포를 막아서는 안 된다.
+Notion MCP may be used by Codex during work sessions for:
 
-### Notion MCP의 역할
+- reading existing Notion content
+- initial migration research
+- creating Markdown-backed mirror pages only after a write target is explicitly allowlisted
+- updating existing mirror pages only after a write target is explicitly allowlisted
 
-Notion MCP는 Codex가 작업 세션 중 다음을 할 때만 사용한다.
+Do not call Notion MCP from unattended CI/CD.
 
-- 기존 Notion 콘텐츠 읽기
-- 최초 마이그레이션
-- Markdown 콘텐츠를 Notion mirror에 생성
-- 기존 mirror 페이지 갱신
+## 3. Notion Write Boundary
 
-무인 CI/CD에서 Notion MCP를 호출하는 구조를 만들지 않는다.
+Existing Notion content is read-only by default.
 
-## 3. 참고 저장소 사용 원칙
+Read-only roots include:
 
-참고 저장소:
-https://github.com/205sla/205-portfolio
+- `한지우 | HJW`
+- `Game Design Hub`
+- `세피리아 모드`
+- any other existing Notion page or database
 
-참고할 것:
-
-- Astro Content Collections 기반 콘텐츠 관리
-- 프로젝트별 `index.md`
-- 프로젝트 폴더에 이미지 colocate
-- Git push → GitHub Actions → GitHub Pages
-- frontmatter 기반 카드/분류/메타데이터
-- 콘텐츠 수에 따라 정적 상세 페이지 자동 생성
-
-그대로 복사하지 말 것:
-
-- 원본 HTML/CSS
-- 디자인 에셋
-- 문구
-- 개인 데이터
-- 저장소 내부 구현 코드의 대량 복제
-
-같은 운영 구조를 이 저장소의 요구사항에 맞춰 독립적으로 구현한다.
-
-## 4. 목표 디렉터리 구조
-
-구현이 끝나면 대략 다음 구조를 갖는다.
+Current homepage root page ID:
 
 ```text
-.
-├─ .codex/
-│  └─ config.toml
-├─ .github/
-│  └─ workflows/
-│     └─ deploy.yml
-├─ docs/
-├─ public/
-│  ├─ assets/
-│  └─ docs/
-├─ src/
-│  ├─ components/
-│  ├─ content/
-│  │  └─ projects/
-│  │     ├─ game/
-│  │     ├─ web/
-│  │     ├─ research/
-│  │     ├─ security/
-│  │     └─ etc/
-│  ├─ layouts/
-│  ├─ pages/
-│  │  ├─ index.astro
-│  │  └─ projects/
-│  │     └─ [...slug].astro
-│  ├─ styles/
-│  └─ content.config.ts
-├─ scripts/
-├─ AGENTS.md
-├─ README.md
-├─ astro.config.mjs
-├─ package.json
-└─ tsconfig.json
+3718671c-22b3-8049-a906-c2a459188eaf
 ```
 
-카테고리는 실제 기존 Notion 자료를 분석한 뒤 조정 가능하다.
-카테고리 변경은 콘텐츠를 확인한 뒤 한 번에 정리하고, 무분별하게 늘리지 않는다.
+No Notion write target is currently allowlisted.
 
-## 5. 콘텐츠 규칙
+Until a separate `Portfolio Mirror` root page or database is created and its ID is explicitly recorded, Codex must not create, update, delete, archive, move, comment on, or upload files to Notion.
 
-프로젝트 하나는 원칙적으로 다음 형태다.
+When a future write target is allowlisted, Codex may write only inside that allowlisted subtree. If the parent chain cannot be verified as being under the allowlisted root, stop and ask the user before making any Notion change.
+
+For the current research/migration phase, allowed Notion operations are limited to:
+
+- search
+- fetch/read
+- workspace/tool-access checks
+
+Forbidden Notion operations:
+
+```text
+create
+update
+delete
+archive
+move
+comment
+upload
+```
+
+## 4. Reference Repository
+
+Reference repository:
+
+```text
+https://github.com/205sla/205-portfolio
+```
+
+Reference only:
+
+- Astro Content Collections structure
+- project-level `index.md`
+- colocated project images
+- Git push to GitHub Actions to GitHub Pages
+- frontmatter-driven cards/categories/metadata
+- static detail page generation from content
+
+Do not copy:
+
+- original HTML/CSS
+- design assets
+- wording
+- personal data
+- large implementation code from the reference repository
+
+## 5. Content Rules
+
+A project normally has this structure:
 
 ```text
 src/content/projects/<category>/<slug>/
@@ -131,172 +125,174 @@ src/content/projects/<category>/<slug>/
 └─ screenshot-02.png
 ```
 
-`slug`는 다음 규칙을 지킨다.
+Slug rules:
 
-- 영문 소문자
-- 숫자 허용
-- 단어 구분은 `-`
-- 공백 금지
-- 한글 파일명 지양
-- 한 번 공개된 slug는 가능하면 변경하지 않음
+- lowercase ASCII letters
+- numbers allowed
+- words separated with `-`
+- no spaces
+- avoid Korean filenames
+- avoid changing a published slug
 
-모든 콘텐츠는 최소 다음 frontmatter를 가진다.
+Minimum frontmatter:
 
 ```yaml
 ---
-title: "제목"
+title: "Project title"
 slug: "stable-slug"
 category: "research"
-description: "카드에 표시할 요약"
-year: 2026
-tags: ["Tag1", "Tag2"]
+description: "Card summary"
 draft: false
 ---
 ```
 
-세부 스키마는 `docs/02-CONTENT-MODEL.md`를 따른다.
+The detailed schema is documented in `docs/02-CONTENT-MODEL.md`.
 
-## 6. Notion mirror 식별 규칙
+## 6. Notion Mirror Identity
 
-Notion 포트폴리오 데이터베이스에는 반드시 `Slug` 속성을 둔다.
+The Notion portfolio database must have a `Slug` property.
 
-GitHub의 `slug`와 Notion의 `Slug`는 항상 동일하다.
+GitHub `slug` and Notion `Slug` must be identical.
 
-Notion 페이지를 업데이트할 때:
+When updating a Notion mirror page:
 
-1. `Slug`로 기존 페이지를 찾는다.
-2. 0개이면 새 페이지 생성.
-3. 1개이면 해당 페이지 갱신.
-4. 2개 이상이면 자동으로 임의 선택하지 말고 중단하고 중복 상황을 사용자에게 알린다.
+1. Find the existing page by `Slug`.
+2. If there are zero matches, create a new page only inside the allowlisted mirror target.
+3. If there is one match, update that page only if it is inside the allowlisted mirror target.
+4. If there are two or more matches, abort and report the duplicate state to the user.
 
-Notion page ID를 공개 Git 저장소의 필수 키로 사용하지 않는다.
-가능하면 `Slug`로 해결한다.
+Do not use Notion page IDs as required public Git keys. Prefer `Slug`.
 
-## 7. 이미지와 파일 규칙
+## 7. Asset Rules
 
-### GitHub/홈페이지
+### GitHub / Website
 
-- 일반 이미지: 프로젝트 폴더에 저장
-- 공통 이미지: `public/assets`
-- PDF/첨부 문서: `public/docs`
-- 큰 영상: Git에 넣지 않고 YouTube 등 외부 URL 사용
-- Notion의 임시 signed URL을 Markdown에 저장하지 않음
+- Project images: colocated in the project folder
+- Shared images: `public/assets`
+- PDF/attachments: `public/docs`
+- Large video: external hosting such as YouTube
+- Never store Notion temporary or signed URLs in Markdown
 
 ### Notion
 
-현재 Notion MCP만으로 이미지/파일을 직접 업로드한다고 가정하지 않는다.
+Do not assume current Notion MCP can directly upload images or files for the mirror workflow.
 
-Notion mirror의 이미지 처리는 이후 별도로 설계한다.
-우선순위는:
-- 별도의 Notion File Upload API 사용 검토
-- 홈페이지/GitHub의 영구 asset URL 링크
-- Notion에는 대표 이미지 없이 원본 링크 제공
-중 하나다.
+Notion mirror image handling must be designed later using one of:
 
-Notion 이미지 URL을 홈페이지의 영구 asset URL로 재사용하지 않는다.
+- the Notion File Upload API
+- permanent GitHub Pages asset URLs
+- source links without embedded image mirroring
 
-## 8. 작업 모드
+GitHub/homepage assets remain canonical.
 
-### Draft mode
+## 8. Work Modes
 
-사용자가 "초안", "로컬에서만", "배포하지 마"라고 하면:
+### Draft Mode
 
-1. 로컬 Markdown/코드 수정
-2. 검사
-3. 로컬 빌드
-4. 결과 보고
-5. Git push 금지
-6. Notion 수정은 사용자가 요구한 경우에만 수행
+When the user says "draft", "local only", or "do not deploy":
 
-### Publish mode
+1. Edit local Markdown/code.
+2. Run checks.
+3. Run a local build.
+4. Report results.
+5. Do not push.
+6. Modify Notion only if the user explicitly asks and a write target is allowlisted.
 
-사용자가 "반영", "게시", "배포", "GitHub와 Notion 모두 업데이트"라고 하면:
+### Publish Mode
 
-1. 로컬 파일 수정
-2. `npm run check` 또는 동등한 검증
-3. `npm run build`
-4. 변경사항 검토
-5. Notion mirror 동기화
-6. Git commit
-7. Git push
-8. GitHub Actions 성공 여부 확인 가능하면 확인
-9. 배포 URL 확인 가능하면 확인
+When the user says "publish", "deploy", "reflect", or "update GitHub and Notion":
 
-사용자가 Git push를 명시적으로 금지하면 절대 push하지 않는다.
+1. Edit local files.
+2. Run `npm run check` or an equivalent validation.
+3. Run `npm run build`.
+4. Review changes.
+5. Sync Notion mirror only when a write target is allowlisted.
+6. Commit.
+7. Push.
+8. Check GitHub Actions when possible.
+9. Check the deployment URL when possible.
 
-## 9. 콘텐츠 수정 순서
+If the user explicitly forbids push, never push.
 
-항상 Markdown을 먼저 수정한다.
+## 9. Content Editing Order
 
-금지되는 순서:
+Always edit Markdown first.
 
-```text
-Notion 수정
-→ 나중에 Markdown에 맞추기
-```
-
-허용되는 순서:
+Forbidden order:
 
 ```text
-Markdown 수정
-→ 로컬 검증
-→ Notion mirror
-→ GitHub publish
+Edit Notion
+-> later align Markdown
 ```
 
-## 10. 최초 마이그레이션
+Allowed order:
 
-최초 마이그레이션은 예외적으로 Notion이 입력 소스가 된다.
+```text
+Edit Markdown
+-> local validation
+-> Notion mirror when allowed
+-> GitHub publish when requested
+```
 
-반드시 다음을 지킨다.
+## 10. Initial Migration
 
-- 원본 Notion은 삭제/대규모 수정하지 않는다.
-- 먼저 inventory를 작성한다.
-- 페이지/DB/이미지/첨부파일 개수를 파악한다.
-- 한 번에 전체를 덮어쓰지 않는다.
-- 작은 샘플 2~3개로 변환 규칙을 검증한다.
-- 이미지가 로컬로 실제 다운로드되었는지 확인한다.
-- Markdown 링크가 Notion signed URL을 가리키지 않는지 검사한다.
-- 사용자 승인 없이 원본 Notion 페이지를 삭제하지 않는다.
+Initial migration is the only phase where Notion can be an input source.
 
-자세한 절차는 `docs/04-INITIAL-MIGRATION.md`.
+Rules:
 
-## 11. 코드 품질 기준
+- Do not delete or mass-edit original Notion pages.
+- Create an inventory first.
+- Count pages, databases, images, and attachments.
+- Do not overwrite everything in one pass.
+- Validate conversion rules with 2-3 small samples first.
+- Confirm that images were actually downloaded locally before referencing them.
+- Verify Markdown links do not point at Notion signed URLs.
+- Do not delete original Notion pages without user approval.
 
-- TypeScript 우선
-- 단순한 정적 사이트에 불필요한 프레임워크 추가 금지
-- 서버 DB 추가 금지
-- CMS 추가 금지
-- 빌드 시 네트워크 의존 최소화
-- 콘텐츠와 프레젠테이션 분리
-- 중복된 frontmatter 파싱 로직 생성 금지
-- 스키마 검증 사용
-- 접근성 있는 HTML
-- 반응형 레이아웃
-- 이미지 최적화
-- 깨진 내부 링크 방지
+See `docs/04-INITIAL-MIGRATION.md`.
 
-## 12. 구현 전 행동
+### Migration Research Files
 
-큰 작업을 시작할 때:
+`migration/` is not website source. It is Codex working material for inventory and migration research.
 
-1. 이 `AGENTS.md` 읽기
-2. `project.config.json` 읽기
-3. 관련 `docs/` 읽기
-4. 현재 저장소 상태 확인
-5. 기존 구현이 있으면 파괴적으로 재작성하지 않고 재사용 가능한 부분 파악
-6. 작업 계획 수립
-7. 구현
-8. 실제 명령으로 검증
+Existing tracked files under `migration/` must not be removed or history-rewritten without explicit user approval.
 
-## 13. 완료 보고 형식
+New internal research files under `migration/project-research/` should not be committed to the public GitHub repository by default. They may contain local evidence notes, private-source observations, or attribution questions that are useful for Codex but not intended as public portfolio content.
 
-Codex는 작업 완료 시 다음을 간단히 보고한다.
+## 11. Code Quality
 
-- 변경한 파일
-- 구현한 기능
-- 실행한 검증 명령과 결과
-- Notion 동기화 여부
-- Git commit/push 여부
-- 남아 있는 TODO
-- 사용자가 다음에 할 한 가지 행동
+- Prefer TypeScript.
+- Do not add unnecessary frameworks for a static site.
+- Do not add a server database.
+- Do not add a CMS.
+- Minimize build-time network dependencies.
+- Separate content and presentation.
+- Do not duplicate frontmatter parsing logic.
+- Use schema validation.
+- Keep HTML accessible.
+- Keep layouts responsive.
+- Optimize images.
+- Prevent broken internal links.
+
+## 12. Before Large Work
+
+1. Read this `AGENTS.md`.
+2. Read `project.config.json`.
+3. Read relevant `docs/`.
+4. Check repository status.
+5. Reuse existing implementation instead of rewriting destructively.
+6. Form a plan.
+7. Implement.
+8. Verify with real commands.
+
+## 13. Completion Report
+
+Briefly report:
+
+- changed files
+- implemented behavior/content
+- validation commands and results
+- Notion sync status
+- Git commit/push status
+- remaining TODOs
+- one recommended next action for the user

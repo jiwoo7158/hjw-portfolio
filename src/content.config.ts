@@ -13,6 +13,9 @@ const projects = defineCollection({
     year: z.number().int().optional(),
     dateRange: z.string().optional(),
     team: z.string().optional(),
+    status: z.enum(["ongoing", "completed", "discontinued"]).optional(),
+    context: z.enum(["personal", "team", "coursework"]).optional(),
+    role: z.string().optional(),
     tags: z.array(z.string()).default([]),
     cover: z
       .object({

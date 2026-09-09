@@ -1,93 +1,72 @@
-# 07. 이미지/파일 정책
+# 07. Asset Policy
 
-## 프로젝트 이미지
+## Website Assets
 
-위치:
+Project-specific images belong beside the project entry:
 
 ```text
 src/content/projects/<category>/<slug>/
-```
-
-예:
-
-```text
-townscaper-3d-grid/
 ├─ index.md
 ├─ cover.png
-├─ 2d-grid.png
-└─ tetrahedral-result.png
+└─ screenshot-01.png
 ```
 
-Markdown:
+Shared public assets belong in:
+
+```text
+public/assets
+```
+
+Public documents belong in:
+
+```text
+public/docs
+```
+
+Large videos should stay outside Git and be linked from a stable hosting service such as YouTube or Vimeo.
+
+## Filenames
+
+Use stable ASCII filenames:
+
+```text
+cover.png
+screenshot-01.webp
+network-diagram.png
+```
+
+Avoid spaces, Korean filenames, temporary export names, and "final-final" variants.
+
+## Markdown References
+
+Project-local images can be referenced relative to `index.md`:
 
 ```md
-![3차원 격자 결과](tetrahedral-result.png)
+![Gameplay screenshot](screenshot-01.png)
 ```
 
-## 파일명
+Do not reference a local image unless the file exists in the repository.
 
-좋음:
+## Size
 
-```text
-grid-result-01.png
-network-diagram.webp
-cover.jpg
-```
+Prefer reasonably compressed web formats. Keep large raw media, project backups, videos, and build artifacts out of Git.
 
-피함:
+The validation script warns when colocated project assets exceed 10 MiB.
 
-```text
-화면 캡처 2026-09-08 오후 7.12.01.png
-최종(진짜최종)2.png
-```
+## Notion Imported Images
 
-## 이미지 용량
+Do not store Notion temporary or signed URLs in Markdown.
 
-Codex가 가능하면:
-- 불필요하게 거대한 PNG 검사
-- 사진은 적절한 web format 사용
-- 원본 보존이 필요하면 별도 archive 고려
+If a Notion page exposes a temporary file URL, treat it only as a transient read source. Downloading, converting, or rehosting those files requires a separate explicit migration step and confirmation that the final asset is owned by the Git repository.
 
-Git repo에 원본 대형 영상은 넣지 않는다.
+## Notion Mirror Images
 
-## PDF
+Current Notion MCP must not be assumed to directly upload homepage images/files for mirror pages.
 
-권장:
-
-```text
-public/docs/<ascii-name>.pdf
-```
-
-사이트 링크:
-
-```md
-[문서 보기](/docs/document-name.pdf)
-```
-
-실제 Astro base path가 `/`가 아니라면 URL helper를 사용하도록 구현할 수 있다.
-
-## 영상
-
-- YouTube
-- Vimeo
-- 기타 장기 유지 가능한 외부 URL
-
-을 선호한다.
-
-## Notion에서 import한 이미지
-
-Notion API/MCP가 준 temporary URL을 그대로 저장하지 않는다.
-
-다운로드 후 로컬 파일로 소유한다.
-
-## Notion mirror 이미지
-
-현재 Notion MCP만으로 이미지/파일을 직접 업로드한다고 가정하지 않는다.
-
-Notion mirror에서 이미지를 다룰 때는 이후 별도로 다음 중 하나를 선택해 설계한다.
+Future Notion mirror image handling should use one of:
 
 - Notion File Upload API
-- 홈페이지/GitHub의 영구 asset URL
-- 외부 저장소 링크
+- permanent GitHub Pages asset URLs
+- source links without embedded image mirroring
 
-홈페이지/GitHub asset의 canonical 소유권은 계속 Git repository에 있다.
+Website/GitHub assets remain the canonical source.
