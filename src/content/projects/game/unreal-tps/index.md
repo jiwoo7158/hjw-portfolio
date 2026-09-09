@@ -2,13 +2,13 @@
 title: "Unreal TPS Game"
 slug: "unreal-tps"
 category: "game"
-description: "Unreal C++로 캐릭터, 무기, 인벤토리, 이펙트, 룬/모드 훅을 연결한 TPS 시스템 프로젝트."
+description: "Unreal C++로 캐릭터, 무기, 인벤토리, 이펙트, 저장 구조를 구현한 TPS 학교 과제 프로젝트."
 year: 2026
 dateRange: "2026"
-team: "팀/개인 확인 필요"
+team: "5명 / 게임엔진기초"
 status: "completed"
-context: "team"
-role: "C++ gameplay systems coursework contribution candidate"
+context: "coursework"
+role: "C++ gameplay systems implementation"
 tags:
   - Unreal Engine
   - C++
@@ -22,40 +22,33 @@ links:
   github: ""
   demo: ""
   site: ""
-  youtube: ""
+  youtube: "https://youtu.be/2V868Wmjcyc"
   paper: ""
 order: 44
 ---
 
-## Project
+## 프로젝트 개요
 
-`Unreal TPS Game`은 학교 과제로 진행한 Unreal Engine 기반 TPS 프로젝트입니다. 현재도 지속 개발 중이라는 근거는 확인되지 않았으므로 completed 상태로 정리합니다. 확인한 C++ 소스는 캐릭터 입력/상호작용, 무기 소유자 인터페이스, 인벤토리, 무기 발사/장전, 이펙트 타입, 룬/모드 훅을 서로 연결합니다.
+`Unreal TPS Game`은 `게임엔진기초` 과목에서 5명 팀으로 진행한 Unreal Engine 기반 TPS 학교 과제 프로젝트입니다. 현재도 지속 개발 중이라는 근거는 없으므로 `completed` 상태를 유지합니다.
 
-## My Contribution
+## 내 담당 영역
 
-사용자가 지정한 `Character`, `Data`, `Effects`, `Interfaces`, `Inventory`, `Save`, `Weapons` 폴더를 근거로 C++ gameplay system 기여 후보를 정리했습니다. 학교 과제 안에서의 팀 역할과 제출 범위는 공개 전에 확인이 필요합니다.
+사용자는 `Character`의 `Ae_CharacterStub` 관련 코드, `Data`의 무기 타입 관련 코드, `Effects`의 이펙트 처리 시스템, `Interfaces`의 팀 협업용 인터페이스, `Inventory`의 인벤토리 시스템, `Save`의 저장 기능, `Weapons`의 무기 전반 동작을 직접 구현했습니다.
 
-## Problems
+위 폴더 밖의 enemy, mission, npc, UI, variant template 영역까지 사용자 기여로 확대하지 않습니다.
 
-- inventory item data와 실제 장착 weapon actor가 분리되어 있어 동기화 지점이 명확해야 합니다.
-- 무기 stat은 rune/mod 효과로 runtime 변경될 수 있어 중복 적용을 방지해야 합니다.
-- hitscan, projectile effect, multishot, spread, damage request가 owner/collision 규칙을 공유해야 합니다.
+## 핵심 구현
 
-## Design And Implementation
+TPS 무기 시스템은 item data, 장착 actor, 사격 처리, 이펙트, 저장 데이터가 서로 맞물려야 합니다. `UAe_InventoryComponent`는 `UAe_WeaponItemInstance` 배열을 보관하고, 선택한 item instance를 weapon actor로 spawn/equip합니다. 기존 장착 actor는 `Unequip`에서 파괴하고, 새 actor에는 owner interface와 item instance 데이터를 넘겨 장착 상태를 갱신합니다.
 
-`AAe_CharacterStub`는 weapon owner와 hittable interface를 구현하고, 입력, 상호작용, 발사, 장전, 무기 전환, HUD 갱신을 연결합니다. `UAe_InventoryComponent`는 `UAe_WeaponItemInstance` 배열을 보관하고, 선택한 item을 equipped actor로 spawn/equip하는 구조입니다.
+`AAe_WeaponBase`는 owner attach, item instance 초기화, fire/reload, trace shot, spread, multishot, sound, effect spawn을 담당합니다. 카메라 기준 조준 지점과 총구 위치를 분리해 최종 발사 방향을 계산하고, owner actor를 collision query에서 제외해 자기 자신을 맞히는 문제를 피합니다.
 
-`AAe_WeaponBase`는 owner attach, item instance 초기화, fire/reload, trace shot, spread, multishot, sound, effect spawn을 담당합니다. `UAe_AetherModComponent`는 on fire, on hit, on kill, stat rebuild 시점에 모드 효과를 적용할 hook을 제공합니다.
+무기 stat은 rarity, damage, rate of fire, magazine size, projectile speed, crit, spread, multi projectile 값으로 구성되고, rune/mod 효과가 runtime에 적용될 수 있습니다. `UAe_AetherModComponent`는 on fire, on hit, on kill, stat rebuild 시점에 효과를 연결하는 hook 역할을 합니다. 저장 쪽은 weapon item instance를 save data로 추출하고, 저장 데이터에서 item instance를 복원하는 흐름을 둡니다.
 
-## Core Systems
+## 배운 점과 의미
 
-- Character input and weapon-owner interface
-- Inventory item instance and equipped actor separation
-- Weapon stat component and runtime rune updates
-- Effect type/library-based projectile/status handling
-- Aether mod hooks for extensible weapon behavior
-- Save data extraction/restoration path
+이 프로젝트는 Unreal C++에서 actor, component, interface, data asset, save data가 하나의 gameplay loop로 연결되는 방식을 다룬 사례입니다. 학교 과제 안에서 정해진 담당 영역을 구현하면서, 무기 동작과 데이터 구조를 분리해 확장 가능한 TPS 시스템으로 정리하는 경험을 얻었습니다.
 
-## Results And Learnings
+## 관련 링크
 
-이 draft는 Unreal C++에서 actor, component, interface, data asset이 어떻게 한 gameplay loop로 이어지는지 보여주는 방향으로 다듬을 수 있습니다. 공개 전에는 과제 범위와 역할 범위를 확정하고, 실제 플레이/에디터 스크린샷을 추가하는 것이 좋습니다.
+- [Project Presentation](https://youtu.be/2V868Wmjcyc)
