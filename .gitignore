@@ -6,3 +6,5 @@ dist/
 npm-debug.log*
 desktop.ini
 migration/project-research/
+migration/notion-custom-emoji-before.md
+migration/notion-custom-emoji-plan.md
