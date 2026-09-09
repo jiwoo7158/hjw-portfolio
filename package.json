@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/astro-command.mjs dev",
+    "dev:drafts": "node scripts/astro-command.mjs dev --drafts",
     "check": "npm run validate:content && node scripts/astro-command.mjs check",
     "build": "node scripts/astro-command.mjs build",
     "preview": "node scripts/astro-command.mjs preview",

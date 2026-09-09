@@ -32,11 +32,12 @@ const linkLabel = project.data.external ? `${project.data.title} 외부 사이�
     }
   </a>
   <div class="project-body">
-    <div class="meta-row">
-      <span>{categoryLabels[project.data.category]}</span>
-      {project.data.year && <span>{project.data.year}</span>}
-      {project.data.external && <span>External</span>}
-    </div>
+      <div class="meta-row">
+        <span>{categoryLabels[project.data.category]}</span>
+        {project.data.year && <span>{project.data.year}</span>}
+        {project.data.draft && <span>Draft</span>}
+        {project.data.external && <span>External</span>}
+      </div>
     <h3>
       <a
         href={href}

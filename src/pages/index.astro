@@ -6,7 +6,8 @@ import { homepage } from "../data/home";
 import { categoryLabels, sortProjects, uniqueCategories } from "../lib/projects";
 
 const allProjects = await getCollection("projects");
-const projects = sortProjects(allProjects.filter((project) => !project.data.draft));
+const showDrafts = import.meta.env.SHOW_DRAFTS === "true";
+const projects = sortProjects(allProjects.filter((project) => showDrafts || !project.data.draft));
 const categories = uniqueCategories(projects);
 
 const coverModules = import.meta.glob<{ default: string | { src: string } }>(
